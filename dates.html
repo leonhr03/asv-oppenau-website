@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Termine – Angelsportverein Oppenau e.V.</title>
+    <meta name="description" content="Termine, Arbeitseinsätze und Veranstaltungen des Angelsportvereins Oppenau.">
+    <meta name="theme-color" content="#f6f4ee">
+    <meta property="og:image" content="img/og.png">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="favicon-32.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+    <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html" aria-label="Angelsportverein Oppenau – Startseite">
+                <img src="img/logo.png" alt="">
+                <span class="brand__text">
+                    <strong>ASV Oppenau</strong>
+                    <span>Angelsportverein e.V.</span>
+                </span>
+            </a>
+            <button class="burger" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="hauptnavigation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 7h16M4 12h16M4 17h16"/>
+                </svg>
+            </button>
+            <nav class="nav" id="hauptnavigation" aria-label="Hauptnavigation">
+                <ul>
+                    <li><a href="index.html">Startseite</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="dates.html" aria-current="page">Termine</a></li>
+                    <li><a href="youth.html">Jugend</a></li>
+                    <li><a href="kontakt.html">Kontakt</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        <section class="page-hero" aria-labelledby="seiten-titel">
+            <img src="img/page-hero.jpg" alt="">
+            <div class="container page-hero__inner">
+                <h1 id="seiten-titel">Termine</h1>
+                <p>Arbeitseinsätze, Feste und gemeinsame Angeltage – alle Termine des Vereins auf einen Blick.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Unsere Termine</h2>
+                    <p>Der nächste Termin ist hervorgehoben. Bei Änderungen informiert der Vorstand zusätzlich über die Vereinsgruppen.</p>
+                </div>
+                <div class="agenda" id="dateList"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a class="footer-brand" href="index.html">
+                        <img src="img/logo-white.png" alt="">
+                        <span>
+                            <strong>ASV Oppenau</strong>
+                            <span>Angelsportverein e.V.</span>
+                        </span>
+                    </a>
+                    <p>Angeln, Natur und Gemeinschaft im Renchtal. Gegründet 1973.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="index.html">Startseite</a></li>
+                        <li><a href="news.html">News</a></li>
+                        <li><a href="dates.html">Termine</a></li>
+                        <li><a href="youth.html">Jugend</a></li>
+                        <li><a href="kontakt.html">Kontakt</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Kontakt</h3>
+                    <p>Antogasterstraße 11<br>77728 Oppenau</p>
+                    <ul>
+                        <li><a href="mailto:asv-oppenau@web.de">asv-oppenau@web.de</a></li>
+                        <li><a href="tel:+497804910680">07804 910680</a></li>
+                        <li><a href="impressum.html">Impressum &amp; Datenschutz</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© <span id="jahr">2026</span> Angelsportverein Oppenau e.V.</span>
+                <span>Gegründet 1973 · Renchtal, Schwarzwald</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const burger = document.querySelector('.burger');
+        const nav = document.querySelector('.nav');
+        burger.addEventListener('click', () => {
+            const open = nav.classList.toggle('is-open');
+            burger.setAttribute('aria-expanded', String(open));
+            burger.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+        });
+        document.getElementById('jahr').textContent = new Date().getFullYear();
+
+        const monate = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+        function parseDate(text) {
+            const match = text.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+            if (!match) return null;
+            const date = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+            return Number.isNaN(date.getTime()) ? null : date;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+            })[char]);
+        }
+
+        function renderDates(dates) {
+            const container = document.getElementById('dateList');
+            const parsed = dates
+                .map((item) => ({ ...item, parsed: parseDate(item.date) }))
+                .filter((item) => item.parsed)
+                .sort((a, b) => b.parsed - a.parsed);
+
+            if (!parsed.length) {
+                container.innerHTML = '<div class="empty-state">Aktuell sind keine Termine eingetragen.</div>';
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const next = parsed
+                .filter((item) => item.parsed >= today)
+                .sort((a, b) => a.parsed - b.parsed)[0];
+
+            const groups = new Map();
+            parsed.forEach((item) => {
+                const year = item.parsed.getFullYear();
+                if (!groups.has(year)) groups.set(year, []);
+                groups.get(year).push(item);
+            });
+
+            container.innerHTML = [...groups.entries()].map(([year, items]) => `
+                <section class="year-group" aria-label="Termine ${year}">
+                    <h2>${year}</h2>
+                    <ol class="events">
+                        ${items.map((item) => `
+                            <li class="event${item === next ? ' event--next' : ''}">
+                                <div class="event-date">
+                                    <strong>${String(item.parsed.getDate()).padStart(2, '0')}</strong>
+                                    <span>${monate[item.parsed.getMonth()]}</span>
+                                </div>
+                                <div class="event-body">
+                                    ${item === next ? '<span class="event-badge">Nächster Termin</span>' : ''}
+                                    <h3>${escapeHtml(item.title)}</h3>
+                                    ${item.description ? `<p>${item.description}</p>` : ''}
+                                    ${item.link ? `<p>${item.link}</p>` : ''}
+                                </div>
+                            </li>
+                        `).join('')}
+                    </ol>
+                </section>
+            `).join('');
+        }
+
+        fetch('dates.json')
+            .then((response) => response.json())
+            .then(renderDates)
+            .catch(() => {
+                document.getElementById('dateList').innerHTML = '<div class="empty-state">Die Termine konnten nicht geladen werden.</div>';
+            });
+
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    </script>
+</body>
+</html>

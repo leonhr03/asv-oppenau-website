@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "leon-app-store"
+  },
+  "targets": {
+    "leon-app-store": {
+      "hosting": {
+        "asv": [
+          "asv-oppenau"
+        ]
+      }
+    }
+  }
+}

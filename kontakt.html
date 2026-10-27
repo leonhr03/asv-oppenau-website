@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Kontakt – Angelsportverein Oppenau e.V.</title>
+    <meta name="description" content="Kontakt zum Angelsportverein Oppenau e.V. – Fragen zu Mitgliedschaft, Gewässern und Jugendarbeit.">
+    <meta name="theme-color" content="#f6f4ee">
+    <meta property="og:image" content="img/og.png">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="favicon-32.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+    <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html" aria-label="Angelsportverein Oppenau – Startseite">
+                <img src="img/logo.png" alt="">
+                <span class="brand__text">
+                    <strong>ASV Oppenau</strong>
+                    <span>Angelsportverein e.V.</span>
+                </span>
+            </a>
+            <button class="burger" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="hauptnavigation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 7h16M4 12h16M4 17h16"/>
+                </svg>
+            </button>
+            <nav class="nav" id="hauptnavigation" aria-label="Hauptnavigation">
+                <ul>
+                    <li><a href="index.html">Startseite</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="dates.html">Termine</a></li>
+                    <li><a href="youth.html">Jugend</a></li>
+                    <li><a href="kontakt.html" aria-current="page">Kontakt</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main">
+        <section class="page-hero" aria-labelledby="seiten-titel">
+            <img src="img/page-hero.jpg" alt="">
+            <div class="container page-hero__inner">
+                <h1 id="seiten-titel">Kontakt</h1>
+                <p>Fragen zur Mitgliedschaft, zu unseren Gewässern oder zur Jugendarbeit? Schreiben Sie uns.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container contact-layout">
+                <div>
+                    <div class="section-head">
+                        <h2>Schreiben Sie uns</h2>
+                        <p>Wir melden uns so schnell wie möglich bei Ihnen.</p>
+                    </div>
+                    <form class="form-card" id="kontaktForm">
+                        <div class="field">
+                            <label for="name">Name</label>
+                            <input id="name" name="name" type="text" autocomplete="name" required>
+                        </div>
+                        <div class="field">
+                            <label for="email">E-Mail</label>
+                            <input id="email" name="email" type="email" autocomplete="email" required>
+                        </div>
+                        <div class="field">
+                            <label for="nachricht">Nachricht</label>
+                            <textarea id="nachricht" name="nachricht" required></textarea>
+                        </div>
+                        <button class="btn" type="submit">Nachricht senden</button>
+                        <p class="form-note">Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben zur Beantwortung Ihrer Anfrage zu. Weitere Informationen finden Sie im <a href="impressum.html">Impressum &amp; Datenschutz</a>.</p>
+                        <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </div>
+
+                <aside class="contact-info" aria-label="Kontaktdaten">
+                    <div class="info-card">
+                        <h3>Adresse</h3>
+                        <p><strong>Angelsportverein Oppenau e.V.</strong><br>
+                            Antogasterstraße 11<br>
+                            77728 Oppenau</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Direktkontakt</h3>
+                        <p><a href="tel:+497804910680">07804 910680</a><br>
+                            <a href="mailto:asv-oppenau@web.de">asv-oppenau@web.de</a></p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Mitgliedschaft</h3>
+                        <p>Die Beitrittserklärung finden Sie auf der <a href="index.html#mitglied">Startseite</a>.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Jugend</h3>
+                        <p>Ansprechpartner für die Jugendgruppe ist <strong>Heiko Wolber</strong>. Weitere Infos auf der <a href="youth.html">Jugendseite</a>.</p>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a class="footer-brand" href="index.html">
+                        <img src="img/logo-white.png" alt="">
+                        <span>
+                            <strong>ASV Oppenau</strong>
+                            <span>Angelsportverein e.V.</span>
+                        </span>
+                    </a>
+                    <p>Angeln, Natur und Gemeinschaft im Renchtal. Gegründet 1973.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="index.html">Startseite</a></li>
+                        <li><a href="news.html">News</a></li>
+                        <li><a href="dates.html">Termine</a></li>
+                        <li><a href="youth.html">Jugend</a></li>
+                        <li><a href="kontakt.html">Kontakt</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Kontakt</h3>
+                    <p>Antogasterstraße 11<br>77728 Oppenau</p>
+                    <ul>
+                        <li><a href="mailto:asv-oppenau@web.de">asv-oppenau@web.de</a></li>
+                        <li><a href="tel:+497804910680">07804 910680</a></li>
+                        <li><a href="impressum.html">Impressum &amp; Datenschutz</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© <span id="jahr">2026</span> Angelsportverein Oppenau e.V.</span>
+                <span>Gegründet 1973 · Renchtal, Schwarzwald</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const burger = document.querySelector('.burger');
+        const nav = document.querySelector('.nav');
+        burger.addEventListener('click', () => {
+            const open = nav.classList.toggle('is-open');
+            burger.setAttribute('aria-expanded', String(open));
+            burger.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+        });
+        document.getElementById('jahr').textContent = new Date().getFullYear();
+
+        const form = document.getElementById('kontaktForm');
+        const status = document.getElementById('formStatus');
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            status.textContent = '';
+            status.className = 'form-status';
+
+            const data = new FormData(form);
+
+            fetch('https://formsubmit.co/ajax/asv-oppenau@web.de', {
+                method: 'POST',
+                body: data
+            })
+                .then((response) => response.json())
+                .then(() => {
+                    form.reset();
+                    status.textContent = 'Vielen Dank! Ihre Nachricht wurde erfolgreich gesendet.';
+                    status.classList.add('is-success');
+                })
+                .catch(() => {
+                    status.textContent = 'Die Nachricht konnte leider nicht gesendet werden. Bitte schreiben Sie direkt an asv-oppenau@web.de.';
+                    status.classList.add('is-error');
+                });
+        });
+
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    </script>
+</body>
+</html>
