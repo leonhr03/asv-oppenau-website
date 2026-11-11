@@ -1,0 +1,38 @@
+name: Deploy to IONOS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ionos
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Upload via SFTP
+        env:
+          LFTP_PASSWORD: ${{ secrets.IONOS_SFTP_PASSWORD }}
+          SFTP_HOST: ${{ secrets.IONOS_SFTP_HOST }}
+          SFTP_USER: ${{ secrets.IONOS_SFTP_USER }}
+          REMOTE_DIR: ${{ secrets.IONOS_REMOTE_DIR }}
+        run: |
+          lftp --env-password -u "$SFTP_USER" -p 22 "sftp://$SFTP_HOST" -e "
+            set cmd:fail-exit yes;
+            set sftp:auto-confirm yes;
+            set net:max-retries 3;
+            set net:timeout 30;
+            mirror --reverse --verbose --parallel=4 \
+              -X .git/ -X .github/ -X .idea/ -X .firebase/ \
+              -X .firebaserc -X firebase.json -X .gitignore -X .DS_Store \
+              ./ $REMOTE_DIR;
+            bye"
