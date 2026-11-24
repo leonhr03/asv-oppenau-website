@@ -2,7 +2,7 @@
  * Admin-Panel für die ASV-Oppenau-Website.
  *
  * Änderungen an news.json, dates.json und youth.json leben zunächst als Entwurf
- * im localStorage dieses Browsers. Läuft die Seite auf einem Server mit PHP,
+ * in der IndexedDB dieses Browsers (localStorage wäre für Bilder zu klein). Läuft die Seite auf einem Server mit PHP,
  * schreibt „Veröffentlichen“ den Entwurf nach Anmeldung über api.php in die
  * Dateien der Website. Ohne PHP (lokale Vorschau) bleibt es beim Prototyp:
  * nur lesen und als JSON-Datei exportieren.
@@ -172,10 +172,20 @@
         publishing = true;
         renderChrome();
         try {
-            const files = Object.fromEntries(kinds.map((kind) => [
-                kind,
-                { data: draft[kind].map((item) => item.data), version: server.versions[kind] }
-            ]));
+            // Unveränderte Einträge nur als Verweis auf ihre Position in der Datei schicken –
+            // sonst ginge bei jedem Speichern die ganze news.json samt aller Bilder über die Leitung.
+            const files = Object.fromEntries(kinds.map((kind) => {
+                const liveIndex = new Map();
+                live[kind].forEach((item, index) => {
+                    const key = JSON.stringify(item.data);
+                    if (!liveIndex.has(key)) liveIndex.set(key, index);
+                });
+                const items = draft[kind].map((item) => {
+                    const index = liveIndex.get(JSON.stringify(item.data));
+                    return index === undefined ? { data: item.data } : { keep: index };
+                });
+                return [kind, { items, version: server.versions[kind] }];
+            }));
             const result = await api('save', { files });
             kinds.forEach((kind) => {
                 base[kind] = clone(draft[kind]);
@@ -229,26 +239,68 @@
 
     const totalChanges = () => KIND_KEYS.reduce((sum, kind) => sum + changesOf(kind).total, 0);
 
-    function persist() {
-        try {
-            if (totalChanges() === 0 && !stale) {
-                localStorage.removeItem(STORAGE_KEY);
-            } else {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({ base, draft }));
-            }
-        } catch (error) {
-            showToast('Entwurf konnte nicht im Browser gespeichert werden.');
-        }
+    /* Entwurf in IndexedDB: localStorage fasst nur ~5 MB, die Bilder in news.json sind viel größer. */
+    const DB_NAME = 'asv-admin';
+    const DB_STORE = 'draft';
+    let dbPromise = null;
+
+    function openDb() {
+        dbPromise ??= new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = () => request.result.createObjectStore(DB_STORE);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+        return dbPromise;
     }
 
-    function readStored() {
+    async function dbRequest(mode, run) {
+        const db = await openDb();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(DB_STORE, mode);
+            const request = run(tx.objectStore(DB_STORE));
+            tx.oncomplete = () => resolve(request.result);
+            tx.onerror = tx.onabort = () => reject(tx.error);
+        });
+    }
+
+    let persistQueue = Promise.resolve();
+
+    function persist() {
+        // Nacheinander schreiben, damit immer der neueste Stand gewinnt.
+        const snapshot = totalChanges() === 0 && !stale ? null : { base, draft };
+        persistQueue = persistQueue.then(async () => {
+            try {
+                if (snapshot) await dbRequest('readwrite', (store) => store.put(snapshot, STORAGE_KEY));
+                else await dbRequest('readwrite', (store) => store.delete(STORAGE_KEY));
+            } catch (error) {
+                showToast('Entwurf konnte nicht im Browser gespeichert werden.');
+            }
+        });
+        return persistQueue;
+    }
+
+    async function clearStored() {
         try {
-            const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-            const valid = stored && KIND_KEYS.every((kind) => Array.isArray(stored.base?.[kind]) && Array.isArray(stored.draft?.[kind]));
-            return valid ? stored : null;
-        } catch (error) {
-            return null;
+            localStorage.removeItem(STORAGE_KEY);
+        } catch (error) { /* egal */ }
+        try {
+            await dbRequest('readwrite', (store) => store.delete(STORAGE_KEY));
+        } catch (error) { /* nichts zu löschen */ }
+    }
+
+    async function readStored() {
+        let stored = null;
+        try {
+            stored = await dbRequest('readonly', (store) => store.get(STORAGE_KEY));
+        } catch (error) { /* IndexedDB nicht verfügbar */ }
+        if (!stored) {
+            try { // alter Entwurf aus localStorage übernehmen
+                stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            } catch (error) { /* egal */ }
         }
+        const valid = stored && KIND_KEYS.every((kind) => Array.isArray(stored.base?.[kind]) && Array.isArray(stored.draft?.[kind]));
+        return valid ? stored : null;
     }
 
     function exportJson(kind) {
@@ -843,10 +895,7 @@
 
     function reset() {
         if (!confirm('Alle Änderungen im Entwurf verwerfen und den aktuellen Stand der Website laden?')) return;
-        try {
-            localStorage.removeItem(STORAGE_KEY);
-        } catch (error) { /* Speicher nicht verfügbar – nichts zu löschen */ }
-        location.reload();
+        clearStored().then(() => location.reload());
     }
 
     document.addEventListener('click', (event) => {
@@ -964,7 +1013,7 @@
             return;
         }
 
-        const stored = readStored();
+        const stored = await readStored();
         if (stored) {
             base = stored.base;
             draft = stored.draft;

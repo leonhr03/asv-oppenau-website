@@ -7,7 +7,8 @@
  *   login   POST  – { password }
  *   logout  POST
  *   load    GET   – alle drei JSON-Dateien samt Versions-Hash (nur angemeldet)
- *   save    POST  – { files: { news: { data: [...], version: "…" }, … } } (nur angemeldet)
+ *   save    POST  – { files: { news: { items: [{ data: {…} } | { keep: 3 }, …], version: "…" }, … } }
+ *                   (nur angemeldet; keep = unveränderter Eintrag an dieser Position der aktuellen Datei)
  *
  * Das Passwort steht als Hash in admin/config.php (siehe config.example.php).
  * Vor jedem Überschreiben wird die alte Datei nach admin/backups/ kopiert.
@@ -288,24 +289,41 @@ if ($action === 'save') {
     if (!is_array($files) || !$files || array_diff_key($files, FILES)) {
         respond(400, ['error' => 'Unbekannte Datei.']);
     }
-    foreach ($files as $kind => $file) {
-        $error = validateItems($file['data'] ?? null);
-        if ($error !== null) {
-            respond(422, ['error' => FILES[$kind] . ": $error"]);
-        }
-    }
 
     // Erst alles prüfen, dann schreiben – entweder alle Dateien oder keine.
     $handle = lock();
+    $resolved = [];
     foreach ($files as $kind => $file) {
         if (($file['version'] ?? null) !== fileVersion($kind)) {
             respond(409, ['error' => FILES[$kind] . ' wurde inzwischen von anderer Stelle geändert. Bitte die Seite neu laden.']);
         }
+        $items = $file['items'] ?? null;
+        if (!isList($items)) {
+            respond(400, ['error' => FILES[$kind] . ': Es wird eine Liste von Einträgen erwartet.']);
+        }
+        $current = null;
+        $data = [];
+        foreach ($items as $item) {
+            if (is_array($item) && array_key_exists('keep', $item)) {
+                $current ??= json_decode((string) @file_get_contents(SITE_ROOT . '/' . FILES[$kind]), true);
+                if (!is_int($item['keep']) || !isList($current) || !array_key_exists($item['keep'], $current)) {
+                    respond(409, ['error' => FILES[$kind] . ' passt nicht zum Entwurf. Bitte die Seite neu laden.']);
+                }
+                $data[] = $current[$item['keep']];
+            } else {
+                $data[] = is_array($item) ? ($item['data'] ?? null) : null;
+            }
+        }
+        $error = validateItems($data);
+        if ($error !== null) {
+            respond(422, ['error' => FILES[$kind] . ": $error"]);
+        }
+        $resolved[$kind] = $data;
     }
     $versions = [];
-    foreach ($files as $kind => $file) {
+    foreach ($resolved as $kind => $data) {
         backup($kind);
-        writeJson($kind, $file['data']);
+        writeJson($kind, $data);
         $versions[$kind] = fileVersion($kind);
     }
     flock($handle, LOCK_UN);
