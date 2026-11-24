@@ -2,3 +2,6 @@
 .firebase/
 .idea/
 *.log
+admin/config.php
+admin/backups/
+img/uploads/

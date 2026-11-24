@@ -16,8 +16,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
+      - name: Install lftp + ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y lftp imagemagick
+
+      # Bildpfade (img/…) in news.json als Base64 einbetten – betrifft nur die hochgeladene Kopie.
+      - name: Embed images into JSON
+        run: python3 scripts/embed-images.py
+
+      # admin/config.php steht nicht im Git – hier aus dem Secret ADMIN_PASSWORD_HASH erzeugen.
+      - name: Write admin config
+        env:
+          ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
+        run: |
+          if [ -z "$ADMIN_PASSWORD_HASH" ]; then
+            echo "::warning::Secret ADMIN_PASSWORD_HASH fehlt – admin/config.php wird nicht hochgeladen, Anmeldung im Admin-Panel nicht möglich."
+            exit 0
+          fi
+          printf "<?php\nreturn ['password_hash' => '%s'];\n" "$ADMIN_PASSWORD_HASH" > admin/config.php
 
       - name: Upload via SFTP
         env:
@@ -33,6 +48,6 @@ jobs:
             set net:timeout 30;
             mirror --reverse --verbose --parallel=4 \
               -X .git/ -X .github/ -X .idea/ -X .firebase/ \
-              -X .firebaserc -X firebase.json -X .gitignore -X .DS_Store \
+              -X .firebaserc -X firebase.json -X .gitignore -X .DS_Store -X deploy.sh -X deploy-config.sh -X scripts/ \
               ./ $REMOTE_DIR;
             bye"

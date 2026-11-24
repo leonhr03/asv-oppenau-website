@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Admin (Prototyp) – Angelsportverein Oppenau e.V.</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#123326">
+    <link rel="icon" href="../favicon.ico" sizes="any">
+    <link rel="stylesheet" href="../stylesheet.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin">
+    <aside class="admin-side">
+        <a class="admin-brand" href="#overview">
+            <img src="../img/logo-white.png" alt="">
+            <span>
+                <strong>ASV Oppenau</strong>
+                <span>Verwaltung</span>
+            </span>
+        </a>
+        <nav class="admin-nav" aria-label="Admin-Bereiche">
+            <a href="#overview" data-view="overview">Übersicht</a>
+            <a href="#news" data-view="news">News <span class="count" data-count="news"></span></a>
+            <a href="#dates" data-view="dates">Termine <span class="count" data-count="dates"></span></a>
+            <a href="#youth" data-view="youth">Jugend-Material <span class="count" data-count="youth"></span></a>
+        </nav>
+        <a class="admin-back" href="../index.html">← Zur Website</a>
+    </aside>
+
+    <div class="admin-main">
+        <header class="admin-top">
+            <div class="admin-top__title">
+                <h1 id="viewTitle">Übersicht</h1>
+                <span class="pill pill--proto">Prototyp</span>
+            </div>
+            <div class="admin-top__actions">
+                <span class="draft-status" id="draftStatus" role="status"></span>
+                <button class="btn btn--outline btn--sm" type="button" data-action="reset" id="resetBtn" hidden>Entwurf verwerfen</button>
+                <button class="btn btn--sm" type="button" data-action="publish" id="publishBtn" hidden>Veröffentlichen</button>
+                <button class="btn btn--outline btn--sm" type="button" data-action="logout" id="logoutBtn" hidden>Abmelden</button>
+            </div>
+        </header>
+
+        <p class="proto-note">
+            <strong>Nur ein Prototyp:</strong> Änderungen landen als Entwurf in diesem Browser.
+            Die Dateien der Website (<code>news.json</code>, <code>dates.json</code>, <code>youth.json</code>) werden nicht verändert.
+        </p>
+        <div class="stale-note" id="staleNote" hidden>
+            Die Website-Daten haben sich geändert, seit dieser Entwurf begonnen wurde. Veröffentlichen oder Exportieren würde die neueren Daten überschreiben.
+            <button class="link-btn" type="button" data-action="reset">Entwurf verwerfen und neu laden</button>
+        </div>
+
+        <main id="view" class="admin-view" aria-live="polite">
+            <div class="empty-state">Daten werden geladen …</div>
+        </main>
+    </div>
+
+    <dialog class="editor" id="editor" aria-labelledby="editorTitle">
+        <form id="editorForm" novalidate>
+            <header class="editor__head">
+                <h2 id="editorTitle"></h2>
+                <button class="icon-btn" type="button" data-action="close-editor" aria-label="Schließen">✕</button>
+            </header>
+            <div class="editor__body">
+                <div class="editor__fields" id="editorFields"></div>
+                <div class="editor__preview">
+                    <span class="editor__preview-label">Vorschau auf der Website</span>
+                    <div id="editorPreview"></div>
+                </div>
+            </div>
+            <footer class="editor__foot">
+                <button class="btn btn--outline btn--sm" type="button" data-action="close-editor">Abbrechen</button>
+                <button class="btn btn--sm" type="submit">In Entwurf übernehmen</button>
+            </footer>
+        </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" hidden></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400..900&display=swap");
+
 :root {
   --bg: #f6f4ee;
   --surface: #ffffff;
@@ -10,6 +12,7 @@
   --radius: 18px;
   --shadow: 0 22px 45px -32px rgba(18, 51, 38, 0.45);
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Roboto Slab", Georgia, "Times New Roman", serif;
   --header-h: 73px;
 }
 
@@ -64,6 +67,7 @@ h1,
 h2,
 h3,
 h4 {
+  font-family: var(--font-heading);
   line-height: 1.15;
   letter-spacing: -0.025em;
   text-wrap: balance;
@@ -454,6 +458,10 @@ ul {
 
 .prose p:last-child {
   margin-bottom: 0;
+}
+
+.prose h3 {
+  margin: 1.75rem 0 0.6rem;
 }
 
 .prose strong {

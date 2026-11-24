@@ -1,0 +1,1 @@
+php -d post_max_size=64M -d memory_limit=256M -S localhost:8000
