@@ -727,10 +727,32 @@ ul {
   display: block;
 }
 
-.slider__slide img {
+/* Bildrahmen für News: gleiche Höhe für alle Bilder, Hoch- und Querformat ungeschnitten */
+.media-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  max-height: 70vh;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  background: #1f2a24;
+}
+
+.media-frame__bg {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  max-width: none;
+  height: 116%;
   object-fit: cover;
+  filter: blur(22px) brightness(0.75);
+  pointer-events: none;
+}
+
+.media-frame__img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .slider__btn {

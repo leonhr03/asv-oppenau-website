@@ -146,13 +146,23 @@
             })[char]);
         }
 
+        // Fester Rahmen: Hoch- und Querformat werden ganz gezeigt, die Ränder füllt eine unscharfe Kopie.
+        function frameMarkup(src, alt) {
+            return `
+                <div class="media-frame">
+                    <img class="media-frame__bg" src="${src}" alt="" aria-hidden="true" loading="lazy">
+                    <img class="media-frame__img" src="${src}" alt="${alt}" loading="lazy">
+                </div>
+            `;
+        }
+
         function mediaMarkup(item) {
             if (!item.image) return '';
             const images = Array.isArray(item.image) ? item.image : [item.image];
             const alt = escapeHtml(item.title);
 
             if (images.length === 1) {
-                return `<div class="news-card__media"><img src="${images[0]}" alt="${alt}" loading="lazy"></div>`;
+                return `<div class="news-card__media">${frameMarkup(images[0], alt)}</div>`;
             }
 
             return `
@@ -161,7 +171,7 @@
                         <div class="slider__track">
                             ${images.map((src, index) => `
                                 <div class="slider__slide${index === 0 ? ' is-active' : ''}">
-                                    <img src="${src}" alt="${alt} – Bild ${index + 1}" loading="lazy">
+                                    ${frameMarkup(src, `${alt} – Bild ${index + 1}`)}
                                 </div>
                             `).join('')}
                         </div>

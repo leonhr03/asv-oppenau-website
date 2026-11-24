@@ -625,12 +625,13 @@
             const date = parseDate(data.title);
             const meta = date ? `<time>${formatDate(date)}</time>` : '<span>Vereinsleben</span>';
             let media = '';
+            const frame = (src) => `<div class="media-frame"><img class="media-frame__bg" src="${escapeHtml(src)}" alt="" aria-hidden="true"><img class="media-frame__img" src="${escapeHtml(src)}" alt=""></div>`;
             if (images.length === 1) {
-                media = `<div class="news-card__media"><img src="${escapeHtml(images[0])}" alt=""></div>`;
+                media = `<div class="news-card__media">${frame(images[0])}</div>`;
             } else if (images.length > 1) {
                 media = `
                     <div class="news-card__media"><div class="slider">
-                        <div class="slider__track"><div class="slider__slide is-active"><img src="${escapeHtml(images[0])}" alt=""></div></div>
+                        <div class="slider__track"><div class="slider__slide is-active">${frame(images[0])}</div></div>
                         <div class="slider__dots">${images.map((_, i) => `<span class="slider__dot${i === 0 ? ' is-active' : ''}"></span>`).join('')}</div>
                     </div></div>
                 `;
